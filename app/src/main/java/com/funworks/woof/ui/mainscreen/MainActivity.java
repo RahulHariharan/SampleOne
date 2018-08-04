@@ -6,12 +6,12 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.funworks.woof.R;
@@ -28,9 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String QUIZ_FRAGMENT_TAG = "QUIZ_FRAGMENT_TAG";
 
-    //private SectionsPagerAdapter mSectionsPagerAdapter;
-    //private ViewPager mViewPager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AndroidInjection.inject(this);
@@ -42,22 +39,14 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        loadFragment("https://images.dog.ceo/breeds/hound-walker/n02089867_1105.jpg");
-
-        //mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        //mViewPager = (ViewPager) findViewById(R.id.container);
-        //mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+        mainViewModel.fetchBreed();
+        mainViewModel.getRandomDogProvider().getRandomDog().observe(this, randomDog -> {
+            if(randomDog.status.equalsIgnoreCase("success")) {
+                loadFragment(randomDog.message);
+            } else {
+                // TODO: error handling
             }
-        });*/
-
+        });
     }
 
 
@@ -95,24 +84,40 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            MainViewModel viewModel = ((MainActivity)getActivity()).getMainViewModel();
+
             ImageView imageView = rootView.findViewById(R.id.image_view);
-            String url = getArguments().getString(URL);
             Picasso.get()
-                    .load(url)
+                    .load(getArguments().getString(URL))
                     .resizeDimen(R.dimen.image_width, R.dimen.image_height)
                     .centerCrop()
                     .into(imageView);
+
+            Button optionOne = rootView.findViewById(R.id.option_one);
+            viewModel.optionOne.observe((MainActivity)getActivity(), option -> optionOne.setText(option));
+
+            Button optionTwo = rootView.findViewById(R.id.option_two);
+            viewModel.optionTwo.observe((MainActivity)getActivity(), option -> optionTwo.setText(option));
+
             return rootView;
         }
     }
 
     public void onOptionOneSelected(View view) {
-        loadFragment("https://images.dog.ceo/breeds/hound-blood/n02088466_7434.jpg");
+        updateScoreAndFetchBreed(view);
     }
 
     public void onOptionTwoSelected(View view) {
+        updateScoreAndFetchBreed(view);
+    }
 
+    private void updateScoreAndFetchBreed(View view) {
+        if (mainViewModel.getCorrectBreed().equals(((Button)view).getText().toString())) {
+            //TODO: update score
+        }
+        mainViewModel.fetchBreed();
     }
 
     private void loadFragment(String url) {
@@ -121,20 +126,7 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    /*public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return PlaceholderFragment.newInstance(position + 1);
-        }
-
-        @Override
-        public int getCount() {
-            return 3;
-        }
-    }*/
+    private MainViewModel getMainViewModel() {
+        return mainViewModel;
+    }
 }

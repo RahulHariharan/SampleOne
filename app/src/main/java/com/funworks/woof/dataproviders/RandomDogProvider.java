@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 @Singleton
 public class RandomDogProvider {
 
-    private MutableLiveData<RandomDog> randomDog;
+    private MutableLiveData<RandomDog> randomDog = new MutableLiveData<>();
 
     public LiveData<RandomDog> getRandomDog() {
         return randomDog;

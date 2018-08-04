@@ -1,8 +1,11 @@
 package com.funworks.woof.dataproviders;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class Constants {
     
-    public static String[] Breeds = {
+    private static String[] BREEDS_ARRAY = {
             "affenpinscher",
             "african",
             "airedale",
@@ -88,4 +91,6 @@ public class Constants {
             "weimaraner",
             "whippet",
             "wolfhound"};
+
+    public static List<String> BREEDS = Arrays.asList(BREEDS_ARRAY);
 }
