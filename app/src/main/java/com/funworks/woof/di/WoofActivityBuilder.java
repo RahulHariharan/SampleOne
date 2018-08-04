@@ -1,7 +1,10 @@
 package com.funworks.woof.di;
 
-import com.funworks.woof.ui.MainActivity;
-import com.funworks.woof.ui.SplashScreen;
+import com.funworks.woof.ui.mainscreen.MainActivity;
+import com.funworks.woof.ui.mainscreen.MainScreenModule;
+import com.funworks.woof.ui.mainscreen.MainViewModel;
+import com.funworks.woof.ui.splashscreen.SplashScreenActivity;
+import com.funworks.woof.ui.splashscreen.SplashScreenModule;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -13,9 +16,9 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class WoofActivityBuilder {
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules= {MainScreenModule.class})
     abstract MainActivity bindMainActivity();
 
-    @ContributesAndroidInjector
-    abstract SplashScreen bindSplashActivity();
+    @ContributesAndroidInjector(modules = {SplashScreenModule.class})
+    abstract SplashScreenActivity bindSplashActivity();
 }

@@ -24,25 +24,7 @@ public class WoofApplication extends Application implements HasActivityInjector 
     @Override
     public void onCreate() {
         super.onCreate();
-
         DaggerWoofComponent.builder().application(this).build().inject(this);
-
-        /*
-        WoofApiService.fetch().randomDogs(10)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Consumer<RandomDogs>() {
-                    @Override
-                    public void accept(RandomDogs randomDogs) throws Exception {
-
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-
-                    }
-                });*/
-
     }
 
     @Override

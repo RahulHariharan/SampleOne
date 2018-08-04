@@ -1,5 +1,6 @@
 package com.funworks.woof.api;
 
+import com.funworks.woof.data.AllBreeds;
 import com.funworks.woof.data.RandomDog;
 import com.funworks.woof.data.RandomDogs;
 
@@ -24,7 +25,7 @@ public class WoofApiService {
     public interface Service {
 
         @GET("/api/breeds/list/all")
-        Observable<RandomDog> allBreeds ();
+        Observable<AllBreeds> allBreeds ();
 
         @GET("/api/breeds/image/random")
         Observable<RandomDog> randomDog ();
@@ -39,7 +40,7 @@ public class WoofApiService {
         Observable<RandomDog> randomDogByBreed (@Path("breed") String breed);
 
         @GET("/api/breed/{breed}/{subbreed}/images/random")
-        Observable<RandomDog> randomDogByBreed (@Path("breed") String breed, @Path("subbreed") String subbreed);
+        Observable<RandomDog> randomDogBySubbreed (@Path("breed") String breed, @Path("subbreed") String subbreed);
     }
 
     public static Service fetch() {

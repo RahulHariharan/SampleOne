@@ -1,13 +1,14 @@
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.funworks.woof.ui.MainActivity$PlaceholderFragment">
+    tools:context="com.funworks.woof.ui.mainscreen.MainActivity$PlaceholderFragment">
 
     <data>
 
         <variable
             name="viewModel"
-            type="com.funworks.woof.viewmodels.WoofViewModel" />
+            type="com.funworks.woof.ui.mainscreen.MainViewModel" />
     </data>
 
     <ScrollView
@@ -23,22 +24,21 @@
 
             <ImageView
                 android:id="@+id/image_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxWidth="300dp"
-                android:maxHeight="300dp"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
                 android:background="@color/colorPrimary"
                 app:layout_constraintLeft_toLeftOf="@id/guideline_start"
                 app:layout_constraintRight_toRightOf="@id/guideline_end"
                 app:layout_constraintTop_toTopOf="@id/guideline_top"
                 tools:layout_height="300dp"
-                tools:layout_width="300dp"/>
+                tools:layout_width="300dp" />
 
             <Button
                 android:id="@+id/option_one"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="40dp"
+                android:onClick="onOptionOneSelected"
                 app:layout_constraintLeft_toLeftOf="@id/guideline_start"
                 app:layout_constraintRight_toRightOf="@id/guideline_end"
                 app:layout_constraintTop_toBottomOf="@id/image_view" />
@@ -52,18 +52,6 @@
                 app:layout_constraintRight_toRightOf="@id/guideline_end"
                 app:layout_constraintTop_toBottomOf="@id/option_one" />
 
-            <TextView
-                android:id="@+id/section_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/activity_vertical_margin"
-                android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/constraintLayout"
-                tools:layout_constraintLeft_creator="1"
-                tools:layout_constraintTop_creator="1" />
 
             <android.support.constraint.Guideline
                 android:id="@+id/guideline_start"

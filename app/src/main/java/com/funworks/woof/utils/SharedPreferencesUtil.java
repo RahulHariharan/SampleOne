@@ -30,8 +30,4 @@ public class SharedPreferencesUtil {
                 .getInt(Resources.getSystem().getString(R.string.saved_high_score_key),
                         Resources.getSystem().getInteger(R.integer.saved_high_score_default_key));
     }
-
-    public void test() {
-        System.out.println("Yahoo!");
-    }
 }
