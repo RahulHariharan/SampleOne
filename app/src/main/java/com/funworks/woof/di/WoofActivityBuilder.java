@@ -2,7 +2,8 @@ package com.funworks.woof.di;
 
 import com.funworks.woof.ui.mainscreen.MainActivity;
 import com.funworks.woof.ui.mainscreen.MainScreenModule;
-import com.funworks.woof.ui.mainscreen.MainViewModel;
+import com.funworks.woof.ui.scorescreen.ScoreActivity;
+import com.funworks.woof.ui.scorescreen.ScoreScreenModule;
 import com.funworks.woof.ui.splashscreen.SplashScreenActivity;
 import com.funworks.woof.ui.splashscreen.SplashScreenModule;
 
@@ -21,4 +22,7 @@ public abstract class WoofActivityBuilder {
 
     @ContributesAndroidInjector(modules = {SplashScreenModule.class})
     abstract SplashScreenActivity bindSplashActivity();
+
+    @ContributesAndroidInjector(modules = {ScoreScreenModule.class})
+    abstract ScoreActivity bindScoreActivity();
 }

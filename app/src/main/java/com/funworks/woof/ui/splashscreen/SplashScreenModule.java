@@ -14,8 +14,7 @@ import dagger.Provides;
 public class SplashScreenModule {
 
     @Provides
-    SplashScreenViewModel providesSplashScreenViewModel(WoofApiProvider woofApiProvider,
-                                                        AllBreedsProvider allBreedsProvider) {
-        return new SplashScreenViewModel(woofApiProvider, allBreedsProvider);
+    SplashScreenViewModel providesSplashScreenViewModel() {
+        return new SplashScreenViewModel();
     }
 }

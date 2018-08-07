@@ -1,14 +1,14 @@
 package com.funworks.woof.ui.mainscreen;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
-import android.databinding.ObservableField;
-import android.util.Log;
 
 import com.funworks.woof.api.WoofApiProvider;
 import com.funworks.woof.data.RandomDog;
 import com.funworks.woof.dataproviders.Constants;
 import com.funworks.woof.dataproviders.RandomDogProvider;
+import com.funworks.woof.utils.SharedPreferencesUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,18 +21,24 @@ public class MainViewModel extends ViewModel {
 
     public final MutableLiveData<String> optionOne = new MutableLiveData<>();
     public final MutableLiveData<String> optionTwo = new MutableLiveData<>();
+    public final MutableLiveData<Integer> score = new MutableLiveData<>();
 
     private final WoofApiProvider woofApiProvider;
     private final RandomDogProvider randomDogProvider;
+    private final SharedPreferencesUtil sharedPreferencesUtil;
     private final List<String> options = new ArrayList<>();
     private final int NUMBER_OF_OPTIONS = 2;
 
-    private String correctOption;
+    private String breed;
     private Observable<RandomDog> randomDogObservable;
 
-    public MainViewModel(WoofApiProvider woofApiProvider, RandomDogProvider randomDogProvider) {
+    public MainViewModel(WoofApiProvider woofApiProvider,
+                         RandomDogProvider randomDogProvider,
+                         SharedPreferencesUtil sharedPreferencesUtil) {
         this.woofApiProvider = woofApiProvider;
         this.randomDogProvider = randomDogProvider;
+        this.sharedPreferencesUtil = sharedPreferencesUtil;
+        this.score.setValue(0);
     }
 
     @Override
@@ -47,11 +53,20 @@ public class MainViewModel extends ViewModel {
     }
 
     public String getCorrectBreed() {
-        return this.correctOption;
+        return this.breed;
     }
 
     public RandomDogProvider getRandomDogProvider() {
         return randomDogProvider;
+    }
+
+    public LiveData<Integer> incrementScore() {
+        score.setValue(score.getValue() + 1);
+        return score;
+    }
+
+    public SharedPreferencesUtil getSharedPreferencesUtil() {
+        return sharedPreferencesUtil;
     }
 
     private String generateBreedWithOptions() {
@@ -60,11 +75,11 @@ public class MainViewModel extends ViewModel {
         for(int index=0; index < NUMBER_OF_OPTIONS; index++) {
             String breed = Constants.BREEDS.get(index);
             if(index == 0) {
-                correctOption = breed;
+                this.breed = breed;
             }
             options.add(breed);
         }
-        return correctOption;
+        return breed;
     }
 
     private void assignBreedsToAnswers() {

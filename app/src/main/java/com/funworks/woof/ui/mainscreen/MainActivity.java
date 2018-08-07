@@ -1,11 +1,19 @@
 package com.funworks.woof.ui.mainscreen;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,9 +21,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.funworks.woof.R;
 import com.funworks.woof.databinding.ActivityMainBinding;
+import com.funworks.woof.ui.scorescreen.ScoreActivity;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
@@ -49,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -69,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static class PlaceholderFragment extends Fragment {
         private static final String URL = "URL";
+        private Picasso picasso;
 
         public PlaceholderFragment() {
         }
@@ -89,7 +99,8 @@ public class MainActivity extends AppCompatActivity {
             MainViewModel viewModel = ((MainActivity)getActivity()).getMainViewModel();
 
             ImageView imageView = rootView.findViewById(R.id.image_view);
-            Picasso.get()
+            picasso = Picasso.get();
+            picasso
                     .load(getArguments().getString(URL))
                     .resizeDimen(R.dimen.image_width, R.dimen.image_height)
                     .centerCrop()
@@ -103,21 +114,45 @@ public class MainActivity extends AppCompatActivity {
 
             return rootView;
         }
-    }
 
-    public void onOptionOneSelected(View view) {
-        updateScoreAndFetchBreed(view);
-    }
-
-    public void onOptionTwoSelected(View view) {
-        updateScoreAndFetchBreed(view);
-    }
-
-    private void updateScoreAndFetchBreed(View view) {
-        if (mainViewModel.getCorrectBreed().equals(((Button)view).getText().toString())) {
-            //TODO: update score
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            if(picasso != null)
+                picasso.invalidate(URL);
         }
-        mainViewModel.fetchBreed();
+    }
+
+    public void updateScoreAndFetchBreed(View view) {
+        if (mainViewModel.getCorrectBreed().equals(((Button)view).getText().toString())) {
+            mainViewModel.incrementScore().observe(this, score -> {});
+            mainViewModel.fetchBreed();
+        } else {
+            int highScore = mainViewModel.getSharedPreferencesUtil().getHighScore(this);
+            int currentScore = mainViewModel.score.getValue();
+
+            if(currentScore > highScore)
+                mainViewModel.getSharedPreferencesUtil().saveHighScore(this, mainViewModel.score.getValue());
+            showScoreDialog();
+            //navigateToScoreScreen(currentScore);
+        }
+
+    }
+
+    private void showScoreDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(R.layout.retry_layout);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+        //((TextView)dialog.findViewById(R.id.current_score)).setText(mainViewModel.score.getValue().toString());
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    }
+
+    private void navigateToScoreScreen(int currentScore) {
+        Intent intent = new Intent(this, ScoreActivity.class);
+        intent.putExtra(getResources().getString(R.string.current_score_key), currentScore);
+        startActivity(intent);
+        finish();
     }
 
     private void loadFragment(String url) {

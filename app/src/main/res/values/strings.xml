@@ -3,5 +3,6 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
-    <string name="saved_high_score_key">high_score</string>
+    <string name="saved_high_score_key">HighScore</string>
+    <string name="current_score_key">Current Score</string>
 </resources>

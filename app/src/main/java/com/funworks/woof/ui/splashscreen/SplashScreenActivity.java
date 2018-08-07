@@ -3,6 +3,7 @@ package com.funworks.woof.ui.splashscreen;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -26,13 +27,17 @@ public class SplashScreenActivity extends AppCompatActivity {
         ActivitySplashScreenBinding binding
                 = DataBindingUtil.setContentView(this, R.layout.activity_splash_screen);
         binding.setSplashScreenViewModel(splashScreenViewModel);
-        splashScreenViewModel.fetchAllBreeds();
-        splashScreenViewModel.getAllBreeds().observe(this, allBreeds -> navigateToMainActivity());
+        splashScreenViewModel.isCountDownComplete.observe(this, isCountDownComplete -> {
+            if(isCountDownComplete){
+                navigateToMainActivity();
+            }
+        });
+
     }
 
     private void navigateToMainActivity() {
-        Log.v("event_","navigation");
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        finish();
     }
 }

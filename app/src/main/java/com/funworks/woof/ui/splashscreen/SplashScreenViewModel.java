@@ -3,6 +3,7 @@ package com.funworks.woof.ui.splashscreen;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
+import android.os.CountDownTimer;
 import android.util.Log;
 
 import com.funworks.woof.api.WoofApiProvider;
@@ -20,37 +21,24 @@ import io.reactivex.schedulers.Schedulers;
 
 public class SplashScreenViewModel extends ViewModel {
 
-    private final Observable<AllBreeds> allBreedsObservable;
-    private final AllBreedsProvider allBreedsProvider;
+    public final MutableLiveData<Boolean> isCountDownComplete = new MutableLiveData<>();
 
-    @Inject
-    public SplashScreenViewModel(WoofApiProvider woofApiProvider,
-                                 AllBreedsProvider allBreedsProvider) {
-
-        this.allBreedsObservable = woofApiProvider.getAllBreeds();
-        this.allBreedsProvider = allBreedsProvider;
+    public SplashScreenViewModel() {
+        this.isCountDownComplete.setValue(false);
+        beginCountDown();
     }
 
-    @Override
-    public void onCleared() {
-        allBreedsObservable.unsubscribeOn(Schedulers.io());
-    }
+    private void beginCountDown() {
+        new CountDownTimer(5000, 5000) {
+            @Override
+            public void onTick(long l) {
 
-    public LiveData<AllBreeds> getAllBreeds() {
-        return allBreedsProvider.getAllBreeds();
-    }
+            }
 
-    public void fetchAllBreeds() {
-        allBreedsObservable.subscribe(this::onSuccess, this::onFailure);
+            @Override
+            public void onFinish() {
+                isCountDownComplete.setValue(true);
+            }
+        }.start();
     }
-
-    private void onSuccess(AllBreeds allBreeds) {
-        allBreedsProvider.setAllBreeds(allBreeds);
-    }
-
-    private void onFailure(Throwable throwable) {
-        //TODO - add error handling
-        throwable.printStackTrace();
-    }
-
 }
