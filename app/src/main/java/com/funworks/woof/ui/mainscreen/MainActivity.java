@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,12 +23,14 @@ import android.widget.TextView;
 import com.funworks.woof.R;
 import com.funworks.woof.databinding.ActivityMainBinding;
 import com.funworks.woof.ui.homescreen.HomeActivity;
+import com.funworks.woof.utils.UIUtil;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
 import dagger.android.AndroidInjection;
+import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
 
         mainViewModel.fetchBreed();
         mainViewModel.getRandomDogProvider().getRandomDog().observe(this, randomDog -> {
@@ -64,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
         return true;
     }
 
@@ -76,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-*/
+    }*/
+
     public static class PlaceholderFragment extends Fragment {
         private static final String URL = "URL";
         private Picasso picasso;
@@ -103,7 +110,9 @@ public class MainActivity extends AppCompatActivity {
             ImageView imageView = rootView.findViewById(R.id.image_view);
             picasso = Picasso.get();
             if(width != 0) {
+                UIUtil util = ((MainActivity)getActivity()).getMainViewModel().getUiUtil();
                 picasso.load(getArguments().getString(URL))
+                        .transform(new RoundedCornersTransformation(util.dpToPx(15),0))
                         .resize(width, width)
                         .centerCrop()
                         .into(imageView, new Callback() {
