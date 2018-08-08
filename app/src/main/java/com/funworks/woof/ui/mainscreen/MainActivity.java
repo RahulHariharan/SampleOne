@@ -21,7 +21,6 @@ import android.widget.TextView;
 import com.funworks.woof.R;
 import com.funworks.woof.databinding.ActivityMainBinding;
 import com.funworks.woof.ui.homescreen.HomeActivity;
-import com.funworks.woof.utils.UIUtil;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -154,16 +153,15 @@ public class MainActivity extends AppCompatActivity {
         } else {
             int highScore = mainViewModel.getSharedPreferencesUtil().getHighScore(this);
             int currentScore = mainViewModel.score.getValue();
-
-            if(currentScore > highScore)
-                mainViewModel.getSharedPreferencesUtil().saveHighScore(this, mainViewModel.score.getValue());
-            showScoreDialog();
-            //navigateToScoreScreen(currentScore);
+            boolean isNewHighScore = currentScore > highScore;
+            if(isNewHighScore)
+                mainViewModel.getSharedPreferencesUtil().saveHighScore(this, currentScore);
+            showScoreDialog(isNewHighScore);
         }
 
     }
 
-    private void showScoreDialog() {
+    private void showScoreDialog(boolean isNewHighScore) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(R.layout.activity_score);
         AlertDialog dialog = builder.create();
@@ -175,9 +173,14 @@ public class MainActivity extends AppCompatActivity {
             ((TextView)dialog.findViewById(R.id.current_score)).setText(mainViewModel.score.getValue().toString());
 
             dialog.findViewById(R.id.dog_image).setVisibility(currentScore == 0 ? View.VISIBLE : View.GONE);
-            dialog.findViewById(R.id.retry_image).setVisibility(currentScore == 0 ? View.VISIBLE : View.GONE);
+            dialog.findViewById(R.id.retry_button).setVisibility(currentScore == 0 ? View.VISIBLE : View.GONE);
         });
-
+        if(isNewHighScore)
+            ((TextView)(dialog.findViewById(R.id.cheer_text)).findViewById(R.id.cheer_text)).setText("You have a new high score!");
+        dialog.findViewById(R.id.ok_button).setOnClickListener(view -> navigateToScoreScreen(mainViewModel.score.getValue()));
+        dialog.findViewById(R.id.retry_button).setOnClickListener(view -> {
+            dialog.dismiss();
+            mainViewModel.fetchBreed();});
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
