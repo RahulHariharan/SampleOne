@@ -10,6 +10,7 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/colorLightPrimary"
         android:paddingBottom="?attr/actionBarSize">
 
         <com.alexvasilkov.gestures.views.GestureImageView
@@ -27,6 +28,7 @@
             android:background="@drawable/button_selector"
             android:textSize="20sp"
             android:visibility="gone"
+            android:textColor="@color/colorText"
             android:onClick="updateScoreAndFetchBreed"
             app:layout_constraintLeft_toLeftOf="@id/guideline_start"
             app:layout_constraintRight_toRightOf="@id/guideline_end"
@@ -39,6 +41,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:visibility="gone"
+            android:textColor="@color/colorText"
             android:background="@drawable/button_selector"
             android:onClick="updateScoreAndFetchBreed"
             app:layout_constraintBottom_toBottomOf="parent"

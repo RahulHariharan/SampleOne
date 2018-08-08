@@ -31,6 +31,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/play_button_selector"
         android:text="Play"
+        android:textColor="@color/colorText"
         android:onClick="navigateToQuiz"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
