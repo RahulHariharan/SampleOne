@@ -12,6 +12,7 @@
         android:id="@+id/shimmer_view_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -37,6 +38,7 @@
         android:layout_height="wrap_content"
         android:text="Your score,"
         android:textAlignment="center"
+        android:visibility="gone"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@id/shimmer_view_container"
@@ -47,17 +49,44 @@
         android:id="@+id/ok_button"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/drawable_selector"
+        android:background="@drawable/button_selector"
         android:hapticFeedbackEnabled="true"
         android:paddingBottom="15dp"
         android:paddingTop="15dp"
         android:text="Woof!"
+        android:visibility="gone"
         android:textAlignment="center"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintLeft_toLeftOf="@id/guideline_start"
         app:layout_constraintRight_toRightOf="@id/guideline_end"
         app:layout_constraintTop_toBottomOf="@id/shimmer_view_container" />
+
+    <ImageView
+        android:id="@+id/dog_image"
+        android:src="@drawable/sad_dog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:layout_constraintHorizontal_bias="1.00"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <ImageButton
+        android:id="@+id/retry_image"
+        android:src="@drawable/baseline_refresh_black_48"
+        android:background="@drawable/button_selector"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.15"/>
+
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline_start"

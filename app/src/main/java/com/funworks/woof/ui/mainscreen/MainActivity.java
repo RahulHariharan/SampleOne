@@ -2,21 +2,16 @@ package com.funworks.woof.ui.mainscreen;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -25,7 +20,9 @@ import android.widget.TextView;
 
 import com.funworks.woof.R;
 import com.funworks.woof.databinding.ActivityMainBinding;
-import com.funworks.woof.ui.scorescreen.ScoreActivity;
+import com.funworks.woof.ui.homescreen.HomeActivity;
+import com.funworks.woof.utils.UIUtil;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
@@ -60,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        removeFragment();
+    }
+
+    /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
@@ -75,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
+*/
     public static class PlaceholderFragment extends Fragment {
         private static final String URL = "URL";
         private Picasso picasso;
@@ -96,21 +99,26 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
 
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            MainViewModel viewModel = ((MainActivity)getActivity()).getMainViewModel();
 
+            int width = getActivity().getWindow().getDecorView().getWidth();
             ImageView imageView = rootView.findViewById(R.id.image_view);
             picasso = Picasso.get();
-            picasso
-                    .load(getArguments().getString(URL))
-                    .resizeDimen(R.dimen.image_width, R.dimen.image_height)
-                    .centerCrop()
-                    .into(imageView);
+            if(width != 0) {
+                picasso.load(getArguments().getString(URL))
+                        .resize(width, width)
+                        .centerCrop()
+                        .into(imageView, new Callback() {
+                            @Override
+                            public void onSuccess() {
+                                updateUI(rootView);
+                            }
 
-            Button optionOne = rootView.findViewById(R.id.option_one);
-            viewModel.optionOne.observe((MainActivity)getActivity(), option -> optionOne.setText(option));
+                            @Override
+                            public void onError(Exception e) {
 
-            Button optionTwo = rootView.findViewById(R.id.option_two);
-            viewModel.optionTwo.observe((MainActivity)getActivity(), option -> optionTwo.setText(option));
+                            }
+                        });
+            }
 
             return rootView;
         }
@@ -120,6 +128,22 @@ public class MainActivity extends AppCompatActivity {
             super.onDestroy();
             if(picasso != null)
                 picasso.invalidate(URL);
+        }
+
+        private void updateUI(View rootView) {
+            MainViewModel viewModel = ((MainActivity)getActivity()).getMainViewModel();
+
+            Button optionOne = rootView.findViewById(R.id.option_one);
+            viewModel.optionOne.observe((MainActivity)getActivity(), option -> {
+                optionOne.setVisibility(View.VISIBLE);
+                optionOne.setText(option);
+            });
+
+            Button optionTwo = rootView.findViewById(R.id.option_two);
+            viewModel.optionTwo.observe((MainActivity)getActivity(), option -> {
+                optionTwo.setVisibility(View.VISIBLE);
+                optionTwo.setText(option);
+            });
         }
     }
 
@@ -141,15 +165,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void showScoreDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(R.layout.retry_layout);
+        builder.setView(R.layout.activity_score);
         AlertDialog dialog = builder.create();
         dialog.show();
-        //((TextView)dialog.findViewById(R.id.current_score)).setText(mainViewModel.score.getValue().toString());
+        mainViewModel.score.observe(this, currentScore -> {
+            dialog.findViewById(R.id.ok_button).setVisibility(currentScore == 0 ? View.GONE : View.VISIBLE);
+            dialog.findViewById(R.id.cheer_text).setVisibility(currentScore == 0 ? View.GONE : View.VISIBLE);
+            dialog.findViewById(R.id.shimmer_view_container).setVisibility(currentScore == 0 ? View.GONE : View.VISIBLE);
+            ((TextView)dialog.findViewById(R.id.current_score)).setText(mainViewModel.score.getValue().toString());
+
+            dialog.findViewById(R.id.dog_image).setVisibility(currentScore == 0 ? View.VISIBLE : View.GONE);
+            dialog.findViewById(R.id.retry_image).setVisibility(currentScore == 0 ? View.VISIBLE : View.GONE);
+        });
+
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
     private void navigateToScoreScreen(int currentScore) {
-        Intent intent = new Intent(this, ScoreActivity.class);
+        Intent intent = new Intent(this, HomeActivity.class);
         intent.putExtra(getResources().getString(R.string.current_score_key), currentScore);
         startActivity(intent);
         finish();
@@ -163,5 +196,13 @@ public class MainActivity extends AppCompatActivity {
 
     private MainViewModel getMainViewModel() {
         return mainViewModel;
+    }
+
+    private void removeFragment() {
+        FragmentManager manager = getFragmentManager();
+        PlaceholderFragment fragment = (PlaceholderFragment) manager.findFragmentByTag(QUIZ_FRAGMENT_TAG);
+        if(fragment != null) {
+            manager.beginTransaction().remove(fragment);
+        }
     }
 }

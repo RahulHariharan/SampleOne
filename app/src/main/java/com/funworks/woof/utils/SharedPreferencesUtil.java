@@ -16,6 +16,7 @@ import io.reactivex.Observable;
  * Created by rahulhariharan on 30/07/18.
  */
 
+@Singleton
 public class SharedPreferencesUtil {
 
     public void saveHighScore(Activity activity, int highScore) {

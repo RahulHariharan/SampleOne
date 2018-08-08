@@ -27,11 +27,12 @@ public class SplashScreenActivity extends AppCompatActivity {
         ActivitySplashScreenBinding binding
                 = DataBindingUtil.setContentView(this, R.layout.activity_splash_screen);
         binding.setSplashScreenViewModel(splashScreenViewModel);
-        splashScreenViewModel.isCountDownComplete.observe(this, isCountDownComplete -> {
+        navigateToMainActivity();
+        /*splashScreenViewModel.isCountDownComplete.observe(this, isCountDownComplete -> {
             if(isCountDownComplete){
                 navigateToMainActivity();
             }
-        });
+        });*/
 
     }
 

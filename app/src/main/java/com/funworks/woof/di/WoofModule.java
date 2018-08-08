@@ -4,11 +4,11 @@ import android.app.Application;
 import android.content.Context;
 
 import com.funworks.woof.api.WoofApiProvider;
-import com.funworks.woof.data.RandomDog;
 import com.funworks.woof.dataproviders.AllBreedsProvider;
 import com.funworks.woof.dataproviders.RandomDogProvider;
 import com.funworks.woof.dataproviders.RandomDogsProvider;
 import com.funworks.woof.utils.SharedPreferencesUtil;
+import com.funworks.woof.utils.UIUtil;
 
 import javax.inject.Singleton;
 
@@ -24,8 +24,15 @@ import dagger.Provides;
 public abstract class WoofModule {
 
     @Provides
+    @Singleton
     public static SharedPreferencesUtil providesSharedPreferencesUtil() {
         return new SharedPreferencesUtil();
+    }
+
+    @Provides
+    @Singleton
+    public static UIUtil providesUIUtils() {
+        return new UIUtil();
     }
 
     @Provides

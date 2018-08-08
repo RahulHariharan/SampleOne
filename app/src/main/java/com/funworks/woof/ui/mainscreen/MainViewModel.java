@@ -9,6 +9,7 @@ import com.funworks.woof.data.RandomDog;
 import com.funworks.woof.dataproviders.Constants;
 import com.funworks.woof.dataproviders.RandomDogProvider;
 import com.funworks.woof.utils.SharedPreferencesUtil;
+import com.funworks.woof.utils.UIUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,7 @@ public class MainViewModel extends ViewModel {
     private final WoofApiProvider woofApiProvider;
     private final RandomDogProvider randomDogProvider;
     private final SharedPreferencesUtil sharedPreferencesUtil;
+    private final UIUtil uiUtil;
     private final List<String> options = new ArrayList<>();
     private final int NUMBER_OF_OPTIONS = 2;
 
@@ -34,10 +36,12 @@ public class MainViewModel extends ViewModel {
 
     public MainViewModel(WoofApiProvider woofApiProvider,
                          RandomDogProvider randomDogProvider,
-                         SharedPreferencesUtil sharedPreferencesUtil) {
+                         SharedPreferencesUtil sharedPreferencesUtil,
+                         UIUtil uiUtil) {
         this.woofApiProvider = woofApiProvider;
         this.randomDogProvider = randomDogProvider;
         this.sharedPreferencesUtil = sharedPreferencesUtil;
+        this.uiUtil = uiUtil;
         this.score.setValue(0);
     }
 
@@ -67,6 +71,10 @@ public class MainViewModel extends ViewModel {
 
     public SharedPreferencesUtil getSharedPreferencesUtil() {
         return sharedPreferencesUtil;
+    }
+
+    public UIUtil getUiUtil() {
+        return uiUtil;
     }
 
     private String generateBreedWithOptions() {
