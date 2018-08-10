@@ -2,6 +2,7 @@ package com.funworks.woof.ui.mainscreen;
 
 import com.funworks.woof.api.WoofApiProvider;
 import com.funworks.woof.dataproviders.RandomDogProvider;
+import com.funworks.woof.utils.ConnectivityUtil;
 import com.funworks.woof.utils.SharedPreferencesUtil;
 import com.funworks.woof.utils.UIUtil;
 
@@ -15,11 +16,12 @@ public class MainScreenModule {
     MainViewModel providesMainViewModel(WoofApiProvider woofApiProvider,
                                         RandomDogProvider randomDogProvider,
                                         SharedPreferencesUtil sharedPreferencesUtil,
-                                        UIUtil uiUtil) {
+                                        UIUtil uiUtil,
+                                        ConnectivityUtil connectivityUtil){
 
         return new MainViewModel(woofApiProvider,
                 randomDogProvider,
                 sharedPreferencesUtil,
-                uiUtil);
+                uiUtil,connectivityUtil);
     }
 }

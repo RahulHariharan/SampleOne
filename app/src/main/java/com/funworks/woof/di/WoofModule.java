@@ -7,6 +7,7 @@ import com.funworks.woof.api.WoofApiProvider;
 import com.funworks.woof.dataproviders.AllBreedsProvider;
 import com.funworks.woof.dataproviders.RandomDogProvider;
 import com.funworks.woof.dataproviders.RandomDogsProvider;
+import com.funworks.woof.utils.ConnectivityUtil;
 import com.funworks.woof.utils.SharedPreferencesUtil;
 import com.funworks.woof.utils.UIUtil;
 
@@ -27,6 +28,12 @@ public abstract class WoofModule {
     @Singleton
     public static SharedPreferencesUtil providesSharedPreferencesUtil() {
         return new SharedPreferencesUtil();
+    }
+
+    @Provides
+    @Singleton
+    public static ConnectivityUtil providesConnectivityUtil(Context context) {
+        return new ConnectivityUtil(context);
     }
 
     @Provides

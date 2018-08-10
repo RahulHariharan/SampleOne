@@ -1,8 +1,11 @@
 <resources>
-    <string name="app_name">Woof!</string>
+    <string name="app_name">dogQ</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="saved_high_score_key">HighScore</string>
     <string name="current_score_key">Current Score</string>
+    <string name="try_again">Oops, try again.</string>
+    <string name="no_connectivity_message">You do not seem to be connected at the moment, please try again later.</string>
+    <string name="api_failure_message">Sorry, we are unable to serve the next question.</string>
 </resources>

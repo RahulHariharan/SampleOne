@@ -10,10 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -34,7 +31,8 @@ import jp.wasabeef.picasso.transformations.RoundedCornersTransformation;
 
 public class MainActivity extends AppCompatActivity {
 
-    @Inject MainViewModel mainViewModel;
+    @Inject
+    MainViewModel mainViewModel;
 
     private static final String QUIZ_FRAGMENT_TAG = "QUIZ_FRAGMENT_TAG";
 
@@ -46,17 +44,23 @@ public class MainActivity extends AppCompatActivity {
                 DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setMainViewModel(mainViewModel);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+       /* Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
-        getSupportActionBar().setIcon(R.mipmap.ic_launcher);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);*/
+        //getSupportActionBar().setTitle("");
+        //getSupportActionBar().setIcon(R.mipmap.ic_launcher_two);
 
         mainViewModel.fetchBreed();
         mainViewModel.getRandomDogProvider().getRandomDog().observe(this, randomDog -> {
-            if(randomDog.status.equalsIgnoreCase("success")) {
+            if (randomDog.status.equalsIgnoreCase("success")) {
                 loadFragment(randomDog.message);
             } else {
-                // TODO: error handling
+                showRequestFailureDialog();
+            }
+        });
+        mainViewModel.isConnectivityAvailable.observe(this, isConnected -> {
+            if (!isConnected) {
+                showNoConnectivityDialog();
             }
         });
     }
@@ -109,10 +113,10 @@ public class MainActivity extends AppCompatActivity {
             int width = getActivity().getWindow().getDecorView().getWidth();
             ImageView imageView = rootView.findViewById(R.id.image_view);
             picasso = Picasso.get();
-            if(width != 0) {
-                UIUtil util = ((MainActivity)getActivity()).getMainViewModel().getUiUtil();
+            if (width != 0) {
+                UIUtil util = ((MainActivity) getActivity()).getMainViewModel().getUiUtil();
                 picasso.load(getArguments().getString(URL))
-                        .transform(new RoundedCornersTransformation(util.dpToPx(15),0))
+                        .transform(new RoundedCornersTransformation(util.dpToPx(15), 0))
                         .resize(width, width)
                         .centerCrop()
                         .into(imageView, new Callback() {
@@ -134,21 +138,21 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onDestroy() {
             super.onDestroy();
-            if(picasso != null)
+            if (picasso != null)
                 picasso.invalidate(URL);
         }
 
         private void updateUI(View rootView) {
-            MainViewModel viewModel = ((MainActivity)getActivity()).getMainViewModel();
+            MainViewModel viewModel = ((MainActivity) getActivity()).getMainViewModel();
 
             Button optionOne = rootView.findViewById(R.id.option_one);
-            viewModel.optionOne.observe((MainActivity)getActivity(), option -> {
+            viewModel.optionOne.observe((MainActivity) getActivity(), option -> {
                 optionOne.setVisibility(View.VISIBLE);
                 optionOne.setText(option);
             });
 
             Button optionTwo = rootView.findViewById(R.id.option_two);
-            viewModel.optionTwo.observe((MainActivity)getActivity(), option -> {
+            viewModel.optionTwo.observe((MainActivity) getActivity(), option -> {
                 optionTwo.setVisibility(View.VISIBLE);
                 optionTwo.setText(option);
             });
@@ -156,40 +160,76 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateScoreAndFetchBreed(View view) {
-        if (mainViewModel.getCorrectBreed().equals(((Button)view).getText().toString())) {
-            mainViewModel.incrementScore().observe(this, score -> {});
-            mainViewModel.fetchBreed();
-        } else {
-            int highScore = mainViewModel.getSharedPreferencesUtil().getHighScore(this);
-            int currentScore = mainViewModel.score.getValue();
-            boolean isNewHighScore = currentScore > highScore;
-            if(isNewHighScore)
-                mainViewModel.getSharedPreferencesUtil().saveHighScore(this, currentScore);
-            showScoreDialog(isNewHighScore);
-        }
+        if (mainViewModel.isNetworkConnected()) {
+            if (mainViewModel.getCorrectBreed().equals(((Button) view).getText().toString())) {
+                mainViewModel.incrementScore().observe(this, score -> {
+                });
+                mainViewModel.fetchBreed();
+            } else {
+                int highScore = mainViewModel.getSharedPreferencesUtil().getHighScore(this);
+                int currentScore = mainViewModel.score.getValue();
+                boolean isNewHighScore = currentScore > highScore;
+                if(currentScore == 0) {
+                    showNoScoreDialog();
+                } else {
+                    if (isNewHighScore)
+                        mainViewModel.getSharedPreferencesUtil()
+                                .saveHighScore(this, currentScore);
 
+                    showScoreDialog(isNewHighScore);
+                }
+            }
+        } else {
+            showNoConnectivityDialog();
+        }
     }
 
     private void showScoreDialog(boolean isNewHighScore) {
+        int score = mainViewModel.score.getValue();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(R.layout.activity_score);
+        builder.setView(score != 0 ? R.layout.activity_score : R.layout.layout_no_score);
         AlertDialog dialog = builder.create();
         dialog.show();
-        mainViewModel.score.observe(this, currentScore -> {
-            dialog.findViewById(R.id.ok_button).setVisibility(currentScore == 0 ? View.GONE : View.VISIBLE);
-            dialog.findViewById(R.id.cheer_text).setVisibility(currentScore == 0 ? View.GONE : View.VISIBLE);
-            dialog.findViewById(R.id.shimmer_view_container).setVisibility(currentScore == 0 ? View.GONE : View.VISIBLE);
-            ((TextView)dialog.findViewById(R.id.current_score)).setText(mainViewModel.score.getValue().toString());
 
-            dialog.findViewById(R.id.dog_image).setVisibility(currentScore == 0 ? View.VISIBLE : View.GONE);
-            dialog.findViewById(R.id.retry_button).setVisibility(currentScore == 0 ? View.VISIBLE : View.GONE);
-        });
-        if(isNewHighScore)
-            ((TextView)(dialog.findViewById(R.id.cheer_text)).findViewById(R.id.cheer_text)).setText("You have a new high score!");
-        dialog.findViewById(R.id.ok_button).setOnClickListener(view -> navigateToScoreScreen(mainViewModel.score.getValue()));
+        ((TextView) dialog.findViewById(R.id.current_score))
+                .setText(mainViewModel.score.getValue().toString());
+
+        if (isNewHighScore) {
+            ((TextView) (dialog.findViewById(R.id.cheer_text))
+                    .findViewById(R.id.cheer_text)).setText("You have a new high score!");
+        }
+
+        dialog.findViewById(R.id.ok_button)
+                .setOnClickListener(view -> navigateToScoreScreen(mainViewModel.score.getValue()));
+
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    }
+
+    private void showNoScoreDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(R.layout.layout_no_score);
+        AlertDialog dialog = builder.create();
+        dialog.show();
         dialog.findViewById(R.id.retry_button).setOnClickListener(view -> {
             dialog.dismiss();
-            mainViewModel.fetchBreed();});
+            mainViewModel.fetchBreed();
+        });
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+    }
+
+    private void showNoConnectivityDialog() {
+        showCustomDialog(R.layout.layout_connectivity_error);
+    }
+
+    private void showRequestFailureDialog() {
+        showCustomDialog(R.layout.layout_request_error);
+    }
+
+    private void showCustomDialog(int layoutId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(layoutId);
+        AlertDialog dialog = builder.create();
+        dialog.show();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
@@ -213,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
     private void removeFragment() {
         FragmentManager manager = getFragmentManager();
         PlaceholderFragment fragment = (PlaceholderFragment) manager.findFragmentByTag(QUIZ_FRAGMENT_TAG);
-        if(fragment != null) {
+        if (fragment != null) {
             manager.beginTransaction().remove(fragment);
         }
     }
